@@ -30,10 +30,61 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
+    // cd ConnectToyou_server
+    // cd ConnectToyou_client
     await client.connect();
 
     const Databse = client.db("ConnectToyouDB");
-    const test = Databse.collection("test")
+    const test = Databse.collection("test");
+    const userCollection = Databse.collection("users");
+    const createPostCollection = Databse.collection("createPost");
+
+
+    app.get('/test', async (req,res)=>{
+      
+      const result = await test.find().toArray();
+      res.send(result);
+    })
+
+
+    // create user post request 
+
+    app.post('/user-registation', async(req,res)=>{
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      console.log(result);
+      res.send(result);
+
+    })
+    // get user 
+
+    app.get("/users", async(req,res)=>{
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    })
+
+
+    // create post api 
+    // 11:30
+    // 11:40-12:30 next 
+    // 12:40 -1:30 cp
+
+
+    app.post('/create-post', async(req,res)=>{
+
+      const users = req.body;
+      const result = await createPostCollection.insertOne(users);
+      res.send(result);
+
+
+
+    })
+    //get 
+    app.get('/all-post', async(req,res)=>{
+      const result = await createPostCollection.find().toArray();
+      res.send(result);
+    })
+    
 
   
 
