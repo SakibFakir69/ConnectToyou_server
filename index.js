@@ -80,9 +80,24 @@ async function run() {
 
     })
     //get 
+
+    //  this api go all post 
+    // this api have email 
+    // for founed post and perform CRUD opration
+
+    /// use pagination and filter 
     app.get('/all-post', async(req,res)=>{
-      const result = await createPostCollection.find().toArray();
-      res.send(result);
+      
+      try{
+        const result = await createPostCollection.find().toArray();
+
+        const suffleresult =result.sort(()=> Math.random()-0.5);
+
+        res.send(suffleresult);
+      }catch(error){
+        console.log("this error founed on all data",error.name);
+      }
+
     })
     
 
