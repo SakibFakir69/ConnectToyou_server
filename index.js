@@ -99,6 +99,59 @@ async function run() {
       }
 
     })
+
+    // make new post show latest 20 data 
+
+    app.get('/new-post', async(req,res)=>{
+      
+      try{
+        const result = await createPostCollection.find().sort({createAt:-1}).limit(20).toArray();
+        res.send(result);
+      }
+      catch(error)
+      {
+        console.log(error.messgae);
+      }
+      
+    })
+
+    /// post complemen under 30 word or length
+
+
+
+    //// Trending post 
+    
+
+    app.get('/trending-post', async(req,res)=>{
+
+      try{
+
+        const result  = await createPostCollection.find({Like:-1}).toArray();
+        res.send({message:"data send",result});
+
+      }catch(error){
+        console.log(`this error founded on ${error.message}`)
+      }
+
+
+
+    })
+
+
+    // all user 
+
+    app.get('/all-user', async(req,res)=>{
+
+      // add pagination and search
+
+      try{
+        const result = await userCollection.find().toArray();
+        res.send(result);
+      }catch(error){
+        console.log(`this error form ${error.message}`);
+      }
+
+    })
     
 
   
