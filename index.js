@@ -38,10 +38,11 @@ async function run() {
     const test = Databse.collection("test");
     const userCollection = Databse.collection("users");
     const createPostCollection = Databse.collection("createPost");
+    const newpostCollection = Databse.collection('newpostdata');
 
 
-    app.get('/test', async (req,res)=>{
-      
+    app.get('/test', async (req, res) => {
+
       const result = await test.find().toArray();
       res.send(result);
     })
@@ -49,7 +50,7 @@ async function run() {
 
     // create user post request 
 
-    app.post('/user-registation', async(req,res)=>{
+    app.post('/user-registation', async (req, res) => {
       const user = req.body;
       const result = await userCollection.insertOne(user);
       console.log(result);
@@ -58,7 +59,7 @@ async function run() {
     })
     // get user 
 
-    app.get("/users", async(req,res)=>{
+    app.get("/users", async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
     })
@@ -70,7 +71,7 @@ async function run() {
     // 12:40 -1:30 cp
 
 
-    app.post('/create-post', async(req,res)=>{
+    app.post('/create-post', async (req, res) => {
 
       const users = req.body;
       const result = await createPostCollection.insertOne(users);
@@ -86,33 +87,41 @@ async function run() {
     // for founed post and perform CRUD opration
 
     /// use pagination and filter 
-    app.get('/all-post', async(req,res)=>{
-      
-      try{
+    app.get('/all-post', async (req, res) => {
+
+      try {
         const result = await createPostCollection.find().toArray();
 
-        const suffleresult =result.sort(()=> Math.random()-0.5);
+        const suffleresult = result.sort(() => Math.random() - 0.5);
 
         res.send(suffleresult);
-      }catch(error){
-        console.log("this error founed on all data",error.name);
+      } catch (error) {
+        console.log("this error founed on all data", error.name);
       }
 
     })
 
+
+    // new 20 data 
+
+
     // make new post show latest 20 data 
 
-    app.get('/new-post', async(req,res)=>{
-      
-      try{
-        const result = await createPostCollection.find().sort({createAt:-1}).limit(20).toArray();
+    app.get('/new-post', async (req, res) => {
+      /// new data new collection 
+
+
+      try {
+
+        const result = await createPostCollection.find().sort({createAt:-1}).limit(6).toArray();
+        
         res.send(result);
+
       }
-      catch(error)
-      {
+      catch (error) {
         console.log(error.messgae);
       }
-      
+
     })
 
     /// post complemen under 30 word or length
@@ -120,16 +129,16 @@ async function run() {
 
 
     //// Trending post 
-    
 
-    app.get('/trending-post', async(req,res)=>{
 
-      try{
+    app.get('/trending-post', async (req, res) => {
 
-        const result  = await createPostCollection.find({Like:-1}).toArray();
-        res.send({message:"data send",result});
+      try {
 
-      }catch(error){
+        const result = await createPostCollection.find({ Like: -1 }).toArray();
+        res.send({ message: "data send", result });
+
+      } catch (error) {
         console.log(`this error founded on ${error.message}`)
       }
 
@@ -140,21 +149,46 @@ async function run() {
 
     // all user 
 
-    app.get('/all-user', async(req,res)=>{
 
-      // add pagination and search
+    // user search by name 
 
-      try{
-        const result = await userCollection.find().toArray();
-        res.send(result);
-      }catch(error){
-        console.log(`this error form ${error.message}`);
+    app.get('/all-user', async (req, res) => {
+
+
+      try {
+
+
+        const page = parseInt(req.query.page) || 1;
+        const size = parseInt(req.query.size) || 6;
+
+        const Name = req.query.Name;
+
+        const filter = { Name: { $regex: Name, $options: "i" } }
+
+
+
+
+        const totalUsers = await userCollection.countDocuments();
+
+
+        const result = await userCollection.find(filter).skip(page - 1).limit(size).toArray();
+
+        res.send({ count: totalUsers, result });
+
+
+      } catch (error) {
+        console.log(`find error on all user ${error.message}`)
+        res.status(500).send({ error: "server error" })
       }
 
-    })
-    
 
-  
+
+
+
+    })
+
+
+
 
 
 
@@ -179,8 +213,7 @@ async function run() {
 
 
 
-  }catch(error)
-  {
+  } catch (error) {
     console.log(error);
   }
 }
@@ -200,10 +233,10 @@ run().catch(console.log);
 // server run 
 
 // api test 
-app.get('/', async (req,res)=>{
-    res.send("server running")
+app.get('/', async (req, res) => {
+  res.send("server running")
 })
 
-app.listen(port , ()=>console.log(` server running on ${port} port`))
+app.listen(port, () => console.log(` server running on ${port} port`))
 
 
