@@ -1,5 +1,5 @@
 
-const { MongoClient, ServerApiVersion, Db } = require('mongodb');
+const { MongoClient, ServerApiVersion, Db, ObjectId } = require('mongodb');
 require("dotenv").config();
 
 const express = require("express")
@@ -113,7 +113,7 @@ async function run() {
 
       try {
 
-        const result = await createPostCollection.find().sort({createAt:-1}).limit(6).toArray();
+        const result = await createPostCollection.find().sort({_id:-1}).limit(6).toArray();
         
         res.send(result);
 
@@ -186,6 +186,84 @@ async function run() {
 
 
     })
+
+    // details page opration
+
+    /// all post 
+
+    app.get('/details-post/:id', async(req,res)=>{
+      const id = req.params.id;
+
+      const filter = {_id: new ObjectId(id)};
+
+      const result = await createPostCollection.find(filter).toArray();
+      res.send(result);
+
+    })
+
+    // liked
+
+    app.put('/new-details-post/:id', async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+     
+
+      try{
+
+        const result = await createPostCollection.updateOne(query,{$inc:{Like:1}});
+        res.send(result);
+
+      }catch(error)
+      {
+        console.log(error.name);
+      }
+
+      
+
+    })
+
+    // liked decrement 
+
+    
+    app.put('/new-details-post-unlike/:id', async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+     
+
+      try{
+
+        const result = await createPostCollection.updateOne(query,{$inc:{UnLike:1}});
+        res.send(result);
+
+      }catch(error)
+      {
+        console.log(error.name);
+      }
+
+      
+
+    })
+
+
+
+
+    // follow post
+
+
+    app.put('/new-details-post-follow/:id', async(req,res)=>{
+
+      try{
+        const id = req.params.id;
+      const qury = {_id : new ObjectId(id)};
+
+      const result = await createPostCollection.updateOne(qury,{$inc:{FollowPost:1}})
+      res.send(result);
+      }catch(error){
+        console.log(` this error from follow post`, error.name);
+      }
+    })
+
+
 
 
 
