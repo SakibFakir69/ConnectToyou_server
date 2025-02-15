@@ -113,8 +113,8 @@ async function run() {
 
       try {
 
-        const result = await createPostCollection.find().sort({_id:-1}).limit(6).toArray();
-        
+        const result = await createPostCollection.find().sort({ _id: -1 }).limit(6).toArray();
+
         res.send(result);
 
       }
@@ -191,10 +191,10 @@ async function run() {
 
     /// all post 
 
-    app.get('/details-post/:id', async(req,res)=>{
+    app.get('/details-post/:id', async (req, res) => {
       const id = req.params.id;
 
-      const filter = {_id: new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
 
       const result = await createPostCollection.find(filter).toArray();
       res.send(result);
@@ -203,44 +203,42 @@ async function run() {
 
     // liked
 
-    app.put('/new-details-post/:id', async(req,res)=>{
+    app.put('/new-details-post/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
-     
+      const query = { _id: new ObjectId(id) };
 
-      try{
 
-        const result = await createPostCollection.updateOne(query,{$inc:{Like:1}});
+      try {
+
+        const result = await createPostCollection.updateOne(query, { $inc: { Like: 1 } });
         res.send(result);
 
-      }catch(error)
-      {
+      } catch (error) {
         console.log(error.name);
       }
 
-      
+
 
     })
 
     // liked decrement 
 
-    
-    app.put('/new-details-post-unlike/:id', async(req,res)=>{
+
+    app.put('/new-details-post-unlike/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
-     
+      const query = { _id: new ObjectId(id) };
 
-      try{
 
-        const result = await createPostCollection.updateOne(query,{$inc:{UnLike:1}});
+      try {
+
+        const result = await createPostCollection.updateOne(query, { $inc: { UnLike: 1 } });
         res.send(result);
 
-      }catch(error)
-      {
+      } catch (error) {
         console.log(error.name);
       }
 
-      
+
 
     })
 
@@ -250,19 +248,37 @@ async function run() {
     // follow post
 
 
-    app.put('/new-details-post-follow/:id', async(req,res)=>{
+    app.put('/new-details-post-follow/:id', async (req, res) => {
 
-      try{
+      try {
         const id = req.params.id;
-      const qury = {_id : new ObjectId(id)};
+        const qury = { _id: new ObjectId(id) };
 
-      const result = await createPostCollection.updateOne(qury,{$inc:{FollowPost:1}})
-      res.send(result);
-      }catch(error){
+        const result = await createPostCollection.updateOne(qury, { $inc: { FollowPost: 1 } })
+        res.send(result);
+      } catch (error) {
         console.log(` this error from follow post`, error.name);
       }
     })
+    // user follow 
 
+    app.put('/new-details-page-user-follow/:id', async (req, res) => {
+
+      try {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+
+        const result = await createPostCollection.updateOne(filter, { $inc: { Follow: 1 } })
+
+        res.send(result);
+
+      } catch (error) {
+        console.log(` this error come form user follow ${error.message}`)
+      }
+
+
+
+    })
 
 
 
