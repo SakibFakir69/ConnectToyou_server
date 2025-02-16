@@ -89,12 +89,24 @@ async function run() {
     /// use pagination and filter 
     app.get('/all-post', async (req, res) => {
 
+
       try {
-        const result = await createPostCollection.find().toArray();
+
+        const page = parseInt(req.query.page) || 1;
+        const size = parseInt(req.query.size) || 6;
+
+        const skip = (page-1)*size;
+        const search = req.query.PostName;
+        const filter =search ?  { PostName:{$regex:search,$options:'i'}} : {}; 
+
+
+        const result = await createPostCollection.find(filter).skip(skip).limit(size).toArray();
 
         const suffleresult = result.sort(() => Math.random() - 0.5);
+        const countDocuments = await createPostCollection.countDocuments();
 
-        res.send(suffleresult);
+        res.send({countDocuments,suffleresult});
+
       } catch (error) {
         console.log("this error founed on all data", error.name);
       }
@@ -103,7 +115,6 @@ async function run() {
 
 
     // new 20 data 
-
 
     // make new post show latest 20 data 
 
@@ -135,7 +146,8 @@ async function run() {
 
       try {
 
-        const result = await createPostCollection.find({ Like: -1 }).toArray();
+        const result = await createPostCollection.find().sort({Like:-1}).limit(12).toArray();
+
         res.send({ message: "data send", result });
 
       } catch (error) {
