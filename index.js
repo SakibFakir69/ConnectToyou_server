@@ -280,7 +280,7 @@ async function run() {
         const id = req.params.id;
         const filter = { _id: new ObjectId(id) };
 
-        const result = await createPostCollection.updateOne(filter, { $inc: { Follow: 1 } })
+        const result = await userCollection.updateOne(filter, { $inc: { Follow: 1 } })
 
         res.send(result);
 
@@ -292,6 +292,13 @@ async function run() {
 
     })
 
+    app.get('/top-follwer',async (req,res)=>{
+
+      const result = await userCollection.find().sort({Follow:-1}).toArray();
+      res.send(result);
+    })
+
+    
 
 
 
