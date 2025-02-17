@@ -292,10 +292,29 @@ async function run() {
 
     })
 
+    // top follwer
+
     app.get('/top-follwer',async (req,res)=>{
 
       const result = await userCollection.find().sort({Follow:-1}).toArray();
       res.send(result);
+    })
+
+
+    // new account top 3 
+
+    app.get('/new-account', async(req,res)=>{
+
+      try{
+        const result = await userCollection.find().sort({_id:-1}).limit(3);
+        res.send(result);
+
+      }catch(error)
+      {
+        console.log(error.code);
+      }
+
+    
     })
 
     
