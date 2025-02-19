@@ -274,15 +274,22 @@ async function run() {
     })
     // user follow 
 
-    app.put('/new-details-page-user-follow/:id', async (req, res) => {
+    app.put('/new-details-page-user-follow/:Email', async (req, res) => {
 
       try {
-        const id = req.params.id;
-        const filter = { _id: new ObjectId(id) };
+        const Email = req.params.Email;
 
-        const result = await userCollection.updateOne(filter, { $inc: { Follow: 1 } })
 
-        res.send(result);
+        const findEmail = await userCollection.findOne({Email});
+        if(findEmail)
+        {
+          const result = await userCollection.updateOne(findEmail, { $inc: { Follow: 1 } });
+          console.log(result);
+  
+          res.send(result);
+        }
+
+       
 
       } catch (error) {
         console.log(` this error come form user follow ${error.message}`)
@@ -294,11 +301,6 @@ async function run() {
 
     // top follwer
 
-    app.get('/top-follwer',async (req,res)=>{
-
-      const result = await userCollection.find().sort({Follow:-1}).toArray();
-      res.send(result);
-    })
 
 
     // new account top 3 
@@ -306,7 +308,7 @@ async function run() {
     app.get('/new-account', async(req,res)=>{
 
       try{
-        const result = await userCollection.find().sort({_id:-1}).limit(3);
+        const result = await userCollection.find().sort({_id:-1}).limit(8);
         res.send(result);
 
       }catch(error)
@@ -317,6 +319,43 @@ async function run() {
     
     })
 
+    // incrase post 
+    app.put('/count-post/:email', async (req, res) => {
+      try {
+        const email = req.params.email;
+        
+        console.log("Email received:", email);
+    
+        const findEmail = await userCollection.findOne({ Email: { $regex: new RegExp(`^${email}$`, "i") } });
+        console.log(findEmail);
+    
+     
+    
+        if (findEmail) {
+          const result = await userCollection.updateOne(
+            findEmail,
+            { $inc: { Post: 1 } },
+        
+          );
+          
+          console.log("Update result:", result);
+          
+          res.send(result);
+        } else {
+          res.send({ message: "User not found" });
+        }
+      } catch (error) {
+        console.log("Error from count-post:", error);
+        res.status(500).send({ error: error.message });
+      }
+    });
+    app.get('/top-follwer',async (req,res)=>{
+
+      const result = await userCollection.find().sort({Follow:-1}).toArray();
+      res.send(result);
+    })
+
+    
     
 
 
