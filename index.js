@@ -39,6 +39,7 @@ async function run() {
     const userCollection = Databse.collection("users");
     const createPostCollection = Databse.collection("createPost");
     const newpostCollection = Databse.collection('newpostdata');
+    const newsletterCollection = Databse.collection("newletters");
 
 
     app.get('/test', async (req, res) => {
@@ -272,6 +273,7 @@ async function run() {
         console.log(` this error from follow post`, error.name);
       }
     })
+
     // user follow 
 
     app.put('/new-details-page-user-follow/:Email', async (req, res) => {
@@ -351,8 +353,28 @@ async function run() {
     });
     app.get('/top-follwer',async (req,res)=>{
 
-      const result = await userCollection.find().sort({Follow:-1}).toArray();
+      const result = await userCollection.find().sort({Follow:-1}).limit(6).toArray();
       res.send(result);
+    })
+
+
+
+    app.post('/newletters', async(req,res)=>{
+
+      try{
+        const subscriber = req.body;
+
+        const result = await newsletterCollection.insertOne(subscriber);
+        res.send(result);
+      
+      }catch(error){
+        res.send("Errror founed on newsletter")
+        console.log(error.message)
+      }
+    
+
+
+
     })
 
     
