@@ -459,6 +459,33 @@ async function run() {
 
     })
 
+    // put req
+
+    app.put('/update-post/:id',async(req,res)=>{
+     
+      try{
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)};
+        
+        const { Title, Message, Category, PostName, Image } = req.body;
+
+        const updatePost ={Title, Message, Category ,  PostName,Image};
+
+        const result = await createPostCollection.updateOne(filter,{$set:updatePost});
+        res.send(result);
+
+
+      }catch(error)
+      {
+        console.log("error form put mnage req",error.message)
+
+      }
+
+
+
+    })
+    
+
 
 
 
