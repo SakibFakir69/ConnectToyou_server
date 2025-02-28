@@ -426,7 +426,7 @@ async function run() {
 
     // manage post
 
-    app.get('/mange-post/:email', async (req,res)=>{
+    app.get('/manage-post/:email', async (req,res)=>{
      
       try{
         const Email = req.params.email;
@@ -438,6 +438,23 @@ async function run() {
         res.status(404).send("not founeded")
       }
 
+
+
+    })
+
+    // delete manage post 
+
+    app.delete('/manage-post-delete/:id',async(req,res)=>{
+      
+      try{
+        const id = req.params.id;
+        const filter = {_id : new ObjectId(id)};
+        const result = await createPostCollection.deleteOne(filter);
+        res.send(result);
+      }catch(error){
+        
+        console.log("Error fecthed delete post", error.message)
+      }
 
 
     })
