@@ -426,6 +426,22 @@ async function run() {
 
     // manage post
 
+    app.get('/mange-post/:email', async (req,res)=>{
+     
+      try{
+        const Email = req.params.email;
+        const result = await createPostCollection.find({Email}).toArray();
+        res.send(result);
+
+      }catch(error)
+      {
+        res.status(404).send("not founeded")
+      }
+
+
+
+    })
+
 
 
 
