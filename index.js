@@ -4,12 +4,18 @@ require("dotenv").config();
 
 const express = require("express")
 const cors = require('cors')
+
+const jwt = require("jsonwebtoken");
+
 const port = process.env.PORT || 5000;
 const app = express();
 
 // middleware 
 
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}))
 app.use(express.json())
 
 
@@ -40,6 +46,38 @@ async function run() {
     const createPostCollection = Databse.collection("createPost");
     const newpostCollection = Databse.collection('newpostdata');
     const newsletterCollection = Databse.collection("newletters");
+
+    const manageColelction = Databse.collection("managePost");
+
+
+
+    app.post("/login", async (req, res) => {
+
+      const { Email } = req.body;
+      console.log(Email)
+
+
+      const token = jwt.sign({ Email: Email }, "faknsdmlaskdmn", {
+        expiresIn: "24h"
+      })
+
+      res.send({ token });
+
+    })
+    app.post("/logout", async (req, res) => {
+
+    })
+
+
+
+
+
+
+
+
+
+
+
 
 
     app.get('/test', async (req, res) => {
@@ -96,9 +134,9 @@ async function run() {
         const page = parseInt(req.query.page) || 1;
         const size = parseInt(req.query.size) || 6;
 
-        const skip = (page-1)*size;
+        const skip = (page - 1) * size;
         const search = req.query.PostName;
-        const filter =search ?  { PostName:{$regex:search,$options:'i'}} : {}; 
+        const filter = search ? { PostName: { $regex: search, $options: 'i' } } : {};
 
 
         const result = await createPostCollection.find(filter).skip(skip).limit(size).toArray();
@@ -106,7 +144,7 @@ async function run() {
         const suffleresult = result.sort(() => Math.random() - 0.5);
         const countDocuments = await createPostCollection.countDocuments();
 
-        res.send({countDocuments,suffleresult});
+        res.send({ countDocuments, suffleresult });
 
       } catch (error) {
         console.log("this error founed on all data", error.name);
@@ -147,7 +185,7 @@ async function run() {
 
       try {
 
-        const result = await createPostCollection.find().sort({Like:-1}).limit(12).toArray();
+        const result = await createPostCollection.find().sort({ Like: -1 }).limit(12).toArray();
 
         res.send({ message: "data send", result });
 
@@ -282,16 +320,21 @@ async function run() {
         const Email = req.params.Email;
 
 
-        const findEmail = await userCollection.findOne({Email});
-        if(findEmail)
-        {
+        const findEmail = await userCollection.findOne({ Email });
+        if (findEmail) {
           const result = await userCollection.updateOne(findEmail, { $inc: { Follow: 1 } });
           console.log(result);
-  
+
           res.send(result);
         }
 
-       
+        // find crate colelction by eamil
+
+
+
+
+
+
 
       } catch (error) {
         console.log(` this error come form user follow ${error.message}`)
@@ -307,41 +350,40 @@ async function run() {
 
     // new account top 3 
 
-    app.get('/new-account', async(req,res)=>{
+    app.get('/new-account', async (req, res) => {
 
-      try{
-        const result = await userCollection.find().sort({_id:-1}).limit(8);
+      try {
+        const result = await userCollection.find().sort({ _id: -1 }).limit(8);
         res.send(result);
 
-      }catch(error)
-      {
+      } catch (error) {
         console.log(error.code);
       }
 
-    
+
     })
 
     // incrase post 
     app.put('/count-post/:email', async (req, res) => {
       try {
         const email = req.params.email;
-        
+
         console.log("Email received:", email);
-    
+
         const findEmail = await userCollection.findOne({ Email: { $regex: new RegExp(`^${email}$`, "i") } });
         console.log(findEmail);
-    
-     
-    
+
+
+
         if (findEmail) {
           const result = await userCollection.updateOne(
             findEmail,
             { $inc: { Post: 1 } },
-        
+
           );
-          
+
           console.log("Update result:", result);
-          
+
           res.send(result);
         } else {
           res.send({ message: "User not found" });
@@ -351,34 +393,46 @@ async function run() {
         res.status(500).send({ error: error.message });
       }
     });
-    app.get('/top-follwer',async (req,res)=>{
+    app.get('/top-follwer', async (req, res) => {
 
-      const result = await userCollection.find().sort({Follow:-1}).limit(6).toArray();
+      const result = await userCollection.find().sort({ Follow: -1 }).limit(6).toArray();
       res.send(result);
     })
 
 
 
-    app.post('/newletters', async(req,res)=>{
+    app.post('/newletters', async (req, res) => {
 
-      try{
+      try {
         const subscriber = req.body;
 
         const result = await newsletterCollection.insertOne(subscriber);
         res.send(result);
-      
-      }catch(error){
+
+      } catch (error) {
         res.send("Errror founed on newsletter")
         console.log(error.message)
       }
-    
+
 
 
 
     })
 
-    
-    
+
+    // manage post 
+    // email matching onujai data send korbo 
+    /// oi data edit deleted korata parba
+
+    // manage post
+
+
+
+
+
+
+
+
 
 
 
