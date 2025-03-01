@@ -13,8 +13,8 @@ const app = express();
 // middleware 
 
 app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
+  origin: "http://localhost:5173","https://connecttoyou.netlify.app/",
+
 }))
 app.use(express.json())
 
@@ -420,10 +420,7 @@ async function run() {
     })
 
 
-    // manage post 
-    // email matching onujai data send korbo 
-    /// oi data edit deleted korata parba
-
+   
     // manage post
 
     app.get('/manage-post/:email', async (req,res)=>{
