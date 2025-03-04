@@ -13,7 +13,7 @@ const app = express();
 // middleware 
 
 app.use(cors({
-  origin: "http://localhost:5173","https://connecttoyou.netlify.app/",
+  origin: ["http://localhost:5173", "https://connecttoyou.netlify.app"]
 
 }))
 app.use(express.json())
@@ -38,7 +38,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // cd ConnectToyou_server
     // cd ConnectToyou_client
-    await client.connect();
+
 
     const Databse = client.db("ConnectToyouDB");
     const test = Databse.collection("test");
@@ -51,22 +51,22 @@ async function run() {
 
 
 
-    app.post("/login", async (req, res) => {
+    // app.post("/login", async (req, res) => {
 
-      const { Email } = req.body;
-      console.log(Email)
+    //   const { Email } = req.body;
+    //   console.log(Email)
 
 
-      const token = jwt.sign({ Email: Email }, "faknsdmlaskdmn", {
-        expiresIn: "24h"
-      })
+    //   const token = jwt.sign({ Email: Email }, "faknsdmlaskdmn", {
+    //     expiresIn: "24h"
+    //   })
 
-      res.send({ token });
+    //   res.send({ token });
 
-    })
-    app.post("/logout", async (req, res) => {
+    // })
+    // app.post("/logout", async (req, res) => {
 
-    })
+    // })
 
 
 
@@ -102,6 +102,53 @@ async function run() {
       const result = await userCollection.find().toArray();
       res.send(result);
     })
+
+    // update user 
+
+
+    app.put("/user-update/:email", async (req, res) => {
+
+      const updateusesr = req.params.email;
+
+      const {
+        number,
+        name
+        ,
+        gender
+        ,
+        fb
+        ,
+        email
+        ,country
+      } = req.body;
+
+
+      const updateUser = {
+        $set: {
+
+          name: name,
+
+          email: email,
+
+          number: number,
+
+          gender: gender,
+          country: country,
+
+          fb: fb
+
+
+
+
+
+        }
+
+      }
+      const result = await userCollection.updateOne(updateUser, updateUser)
+      res.send(result);
+
+    })
+
 
 
     // create post api 
@@ -420,18 +467,17 @@ async function run() {
     })
 
 
-   
+
     // manage post
 
-    app.get('/manage-post/:email', async (req,res)=>{
-     
-      try{
+    app.get('/manage-post/:email', async (req, res) => {
+
+      try {
         const Email = req.params.email;
-        const result = await createPostCollection.find({Email}).toArray();
+        const result = await createPostCollection.find({ Email }).toArray();
         res.send(result);
 
-      }catch(error)
-      {
+      } catch (error) {
         res.status(404).send("not founeded")
       }
 
@@ -441,15 +487,15 @@ async function run() {
 
     // delete manage post 
 
-    app.delete('/manage-post-delete/:id',async(req,res)=>{
-      
-      try{
+    app.delete('/manage-post-delete/:id', async (req, res) => {
+
+      try {
         const id = req.params.id;
-        const filter = {_id : new ObjectId(id)};
+        const filter = { _id: new ObjectId(id) };
         const result = await createPostCollection.deleteOne(filter);
         res.send(result);
-      }catch(error){
-        
+      } catch (error) {
+
         console.log("Error fecthed delete post", error.message)
       }
 
@@ -458,30 +504,28 @@ async function run() {
 
     // put req
 
-    app.put('/update-post/:id',async(req,res)=>{
-     
-      try{
+    app.put('/update-post/:id', async (req, res) => {
+
+      try {
         const id = req.params.id;
-        const filter = {_id: new ObjectId(id)};
-        
+        const filter = { _id: new ObjectId(id) };
+
         const { Title, Message, Category, PostName, Image } = req.body;
 
-        const updatePost ={Title, Message, Category ,  PostName,Image};
+        const updatePost = { Title, Message, Category, PostName, Image };
 
-        const result = await createPostCollection.updateOne(filter,{$set:updatePost});
+        const result = await createPostCollection.updateOne(filter, { $set: updatePost });
         res.send(result);
 
 
-      }catch(error)
-      {
-        console.log("error form put mnage req",error.message)
+      } catch (error) {
+        console.log("error form put mnage req", error.message)
 
       }
 
 
 
     })
-    
 
 
 
@@ -506,8 +550,7 @@ async function run() {
 
 
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
 
 
 
