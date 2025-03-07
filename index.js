@@ -106,46 +106,51 @@ async function run() {
     // update user 
 
 
-    app.put("/user-update/:email", async (req, res) => {
+    app.put("/user-update/:Email", async (req, res) => {
 
-      const updateusesr = req.params.email;
+      try{
+        const email = req.params.Email;
+        const filter ={Email: email};
 
-      const {
-        number,
-        name
-        ,
-        gender
-        ,
-        fb
-        ,
-        email
-        ,country
-      } = req.body;
+        const {    country,    fb,     gender,     name,   number} = req.body;
 
 
-      const updateUser = {
-        $set: {
-
-          name: name,
-
-          email: email,
-
-          number: number,
-
-          gender: gender,
-          country: country,
-
-          fb: fb
-
-
-
-
+        const udpateProfile={
+          $set:{
+            name:name,
+            number:number,
+            gender:gender,
+            country:country,
+            fb:fb
+          }
 
         }
+        const result = await userCollection.updateOne(filter,udpateProfile);
+        res.send(result);
+
+        
+
+
+
+      }catch(error){
+
+        res.send(`${error.message}`)
 
       }
-      const result = await userCollection.updateOne(updateUser, updateUser)
-      res.send(result);
+    })
+
+    // find user by email
+    app.get('/find-userBy/:Email', async(req,res)=>{
+     
+      try{
+        const Email = req.params.Email;
+        const result = await userCollection.findOne({Email});
+        res.send(result);
+      }catch(error){
+        console.log(error.message)
+      }
+
+
 
     })
 
